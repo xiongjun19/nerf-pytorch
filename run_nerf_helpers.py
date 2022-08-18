@@ -94,6 +94,9 @@ class NeRF(nn.Module):
             self.output_linear = nn.Linear(W, output_ch)
 
     def forward(self, x):
+        import time
+        ss = time.time()
+        print("batch size is: ", x.shape[0])
         input_pts, input_views = torch.split(x, [self.input_ch, self.input_ch_views], dim=-1)
         h = input_pts
         for i, l in enumerate(self.pts_linears):
@@ -115,7 +118,7 @@ class NeRF(nn.Module):
             outputs = torch.cat([rgb, alpha], -1)
         else:
             outputs = self.output_linear(h)
-
+        print("model infer time is: ",  time.time() - ss)
         return outputs    
 
     def load_weights_from_keras(self, weights):
